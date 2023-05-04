@@ -2,9 +2,9 @@
 const {MongoClient, ObjectId} = require("mongodb");
 async function connect(){
   if(global.db) return global.db;
-  const conn = await MongoClient.connect("mongodb+srv://antonio:Antonio123@workshop.l0n83oe.mongodb.net/?retryWrites=true&w=majority");
+    const conn = await MongoClient.connect("mongodb+srv://antonio:antonio123@cluster0.6uzzeth.mongodb.net/?retryWrites=true&w=majority");
   if(!conn) return new Error("Can't connect");
-  global.db = await conn.db("workshop");
+    global.db = await conn.db("unifor");
   return global.db;
 }
 
@@ -21,14 +21,26 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
-/* GET clientes */
-router.get('/clientes/:id?', async function(req, res, next) {
+// GET dog
+router.get('/dog', async function(req, res, next) {
+  try{
+    const apidog = await fetch('https://dog.ceo/api/breed/hound/list');
+    res.json(await apidog.json());
+  }
+  catch(ex){
+    console.log(ex);
+    res.status(400).json({erro: `${ex}`});
+  }
+}) 
+
+/* GET aluno */
+router.get('/aluno/:id?', async function(req, res, next) {
     try{
       const db = await connect();
       if(req.params.id)
-        res.json(await db.collection("customers").findOne({_id: new ObjectId(req.params.id)}));
+        res.json(await db.collection("aluno").findOne({_id: new ObjectId(req.params.id)}));
       else
-        res.json(await db.collection("customers").find().toArray());
+        res.json(await db.collection("aluno").find().toArray());
     }
     catch(ex){
       console.log(ex);
@@ -36,12 +48,12 @@ router.get('/clientes/:id?', async function(req, res, next) {
     }
 })
 
-// POST /clientes
-router.post('/clientes', async function(req, res, next){
+// POST /aluno
+router.post('/aluno', async function(req, res, next){
     try{
-      const customer = req.body;
+      const aluno = req.body;
       const db = await connect();
-      res.json(await db.collection("customers").insertOne(customer));
+      res.json(await db.collection("aluno").insertOne(aluno));
     }
     catch(ex){
       console.log(ex);
@@ -49,12 +61,12 @@ router.post('/clientes', async function(req, res, next){
     }
 })
 
-// PUT /clientes/{id}
-router.put('/clientes/:id', async function(req, res, next){
+// PUT /aluno/{id}
+router.put('/aluno/:id', async function(req, res, next){
     try{
-      const customer = req.body;
+      const aluno = req.body;
       const db = await connect();
-      res.json(await db.collection("customers").updateOne({_id: new ObjectId(req.params.id)}, {$set: customer}));
+      res.json(await db.collection("aluno").updateOne({_id: new ObjectId(req.params.id)}, {$set: aluno}));
     }
     catch(ex){
       console.log(ex);
@@ -62,11 +74,11 @@ router.put('/clientes/:id', async function(req, res, next){
     }
 })
 
-// DELETE /clientes/{id}
-router.delete('/clientes/:id', async function(req, res, next){
+// DELETE /aluno/{id}
+router.delete('/aluno/:id', async function(req, res, next){
     try{
       const db = await connect();
-      res.json(await db.collection("customers").deleteOne({_id: new ObjectId(req.params.id)}));
+      res.json(await db.collection("aluno").deleteOne({_id: new ObjectId(req.params.id)}));
     }
     catch(ex){
       console.log(ex);
